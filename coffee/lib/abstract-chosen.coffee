@@ -29,6 +29,7 @@ class AbstractChosen
     @result_single_selected = null
     @allow_single_deselect = if @options.allow_single_deselect? and @form_field.options[0]? and @form_field.options[0].text is "" then @options.allow_single_deselect else false
     @disable_search_threshold = @options.disable_search_threshold || 0
+    @disable_search = @options.disable_search || false
     @search_contains = @options.search_contains || false
     @choices = 0
     @single_backstroke_delete = @options.single_backstroke_delete || false
@@ -48,7 +49,10 @@ class AbstractChosen
   mouse_leave: -> @mouse_on_container = false
 
   input_focus: (evt) ->
-    setTimeout (=> this.container_mousedown()), 50 unless @active_field
+    if @is_multiple
+      setTimeout (=> this.container_mousedown()), 50 unless @active_field
+    else
+      @activate_field() unless @active_field
   
   input_blur: (evt) ->
     if not @mouse_on_container
