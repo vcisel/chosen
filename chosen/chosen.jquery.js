@@ -167,7 +167,9 @@ Copyright (c) 2011 by Harvest
           }), 50);
         }
       } else {
-        if (!this.active_field) return this.activate_field();
+        if (!this.active_field) {
+          return this.activate_field();
+        }
       }
     };
 
@@ -339,7 +341,7 @@ Copyright (c) 2011 by Harvest
       this.container_id += "_chzn";
       this.f_width = this.form_field_jq.outerWidth();
       if (this.f_width < 60) {
-        this.f_width += 10;
+        this.f_width += 15;
       }
       container_div = $("<div />", {
         id: this.container_id,
