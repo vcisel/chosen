@@ -1,7 +1,7 @@
 // Chosen, a Select Box Enhancer for jQuery and Protoype
 // by Patrick Filler for Harvest, http://getharvest.com
-//
-// Version 0.9.11
+// 
+// Version 0.9.8
 // Full source at https://github.com/harvesthq/chosen
 // Copyright (c) 2011 Harvest http://getharvest.com
 
@@ -108,9 +108,9 @@ Copyright (c) 2011 by Harvest
     function AbstractChosen(form_field, options) {
       this.form_field = form_field;
       this.options = options != null ? options : {};
+      this.set_default_values();
       this.is_multiple = this.form_field.multiple;
       this.set_default_text();
-      this.set_default_values();
       this.setup();
       this.set_up_html();
       this.register_observers();
@@ -133,12 +133,10 @@ Copyright (c) 2011 by Harvest
       this.allow_single_deselect = (this.options.allow_single_deselect != null) && (this.form_field.options[0] != null) && this.form_field.options[0].text === "" ? this.options.allow_single_deselect : false;
       this.disable_search_threshold = this.options.disable_search_threshold || 0;
       this.disable_search = this.options.disable_search || false;
-      this.enable_split_word_search = this.options.enable_split_word_search != null ? this.options.enable_split_word_search : true;
       this.search_contains = this.options.search_contains || false;
       this.choices = 0;
       this.single_backstroke_delete = this.options.single_backstroke_delete || false;
-      this.max_selected_options = this.options.max_selected_options || Infinity;
-      return this.inherit_select_classes = this.options.inherit_select_classes || false;
+      return this.max_selected_options = this.options.max_selected_options || Infinity;
     };
 
     AbstractChosen.prototype.set_default_text = function() {
@@ -306,14 +304,7 @@ Copyright (c) 2011 by Harvest
 
   $.fn.extend({
     chosen: function(options) {
-      var browser, match, ua;
-      ua = navigator.userAgent.toLowerCase();
-      match = /(msie) ([\w.]+)/.exec(ua) || [];
-      browser = {
-        name: match[1] || "",
-        version: match[2] || "0"
-      };
-      if (browser.name === "msie" && (browser.version === "6.0" || (browser.version === "7.0" && document.documentMode === 7))) {
+      if ($.browser.msie && ($.browser.version === "6.0" || ($.browser.version === "7.0" && document.documentMode === 7))) {
         return this;
       }
       return this.each(function(input_field) {
@@ -345,32 +336,18 @@ Copyright (c) 2011 by Harvest
     };
 
     Chosen.prototype.set_up_html = function() {
-      var container_classes, container_div, container_props, dd_top, dd_width, sf_width;
+      var container_div, dd_top, dd_width, sf_width;
       this.container_id = this.form_field.id.length ? this.form_field.id.replace(/[^\w]/g, '_') : this.generate_field_id();
       this.container_id += "_chzn";
-      container_classes = ["chzn-container"];
-      container_classes.push("chzn-container-" + (this.is_multiple ? "multi" : "single"));
-      if (this.inherit_select_classes && this.form_field.className) {
-        container_classes.push(this.form_field.className);
-      }
-      if (this.is_rtl) {
-        container_classes.push("chzn-rtl");
-      }
       this.f_width = this.form_field_jq.outerWidth();
-<<<<<<< HEAD
       if (this.f_width < 60) {
         this.f_width += 15;
       }
       container_div = $("<div />", {
-=======
-      container_props = {
->>>>>>> 500c34bcffa34d346e5751cd1592e35f26038f94
         id: this.container_id,
-        "class": container_classes.join(' '),
-        style: 'width: ' + this.f_width + 'px;',
-        title: this.form_field.title
-      };
-      container_div = $("<div />", container_props);
+        "class": "chzn-container" + (this.is_rtl ? ' chzn-rtl' : ''),
+        style: 'width: ' + this.f_width + 'px;'
+      });
       if (this.is_multiple) {
         container_div.html('<ul class="chzn-choices"><li class="search-field"><input type="text" value="' + this.default_text + '" class="default" autocomplete="off" style="width:25px;" /></li></ul><div class="chzn-drop" style="left:-9000px;"><ul class="chzn-results"></ul></div>');
       } else {
@@ -378,6 +355,7 @@ Copyright (c) 2011 by Harvest
       }
       this.form_field_jq.hide().after(container_div);
       this.container = $('#' + this.container_id);
+      this.container.addClass("chzn-container-" + (this.is_multiple ? "multi" : "single"));
       this.dropdown = this.container.find('div.chzn-drop').first();
       dd_top = this.container.height();
       dd_width = this.f_width - get_side_border_padding(this.dropdown);
@@ -485,7 +463,7 @@ Copyright (c) 2011 by Harvest
       if (!this.is_disabled) {
         target_closelink = evt != null ? ($(evt.target)).hasClass("search-choice-close") : false;
         if (evt && evt.type === "mousedown" && !this.results_showing) {
-          evt.preventDefault();
+          evt.stopPropagation();
         }
         if (!this.pending_destroy_click && !target_closelink) {
           if (!this.active_field) {
@@ -749,8 +727,7 @@ Copyright (c) 2011 by Harvest
         if (this.is_multiple && this.choices > 0 && this.search_field.val().length < 1) {
           this.results_hide();
         }
-        link.parents('li').first().remove();
-        return this.search_field_scale();
+        return link.parents('li').first().remove();
       }
     };
 
@@ -799,11 +776,7 @@ Copyright (c) 2011 by Harvest
             this.single_deselect_control_build();
           }
         }
-<<<<<<< HEAD
         if (!(evt.metaKey && this.is_multiple)) {
-=======
-        if (!((evt.metaKey || evt.ctrlKey) && this.is_multiple)) {
->>>>>>> 500c34bcffa34d346e5751cd1592e35f26038f94
           this.results_hide();
         }
         this.search_field.val("");
@@ -872,7 +845,7 @@ Copyright (c) 2011 by Harvest
             if (regex.test(option.html)) {
               found = true;
               results += 1;
-            } else if (this.enable_split_word_search && (option.html.indexOf(" ") >= 0 || option.html.indexOf("[") === 0)) {
+            } else if (option.html.indexOf(" ") >= 0 || option.html.indexOf("[") === 0) {
               parts = option.html.replace(/\[|\]/g, "").split(" ");
               if (parts.length) {
                 for (_j = 0, _len1 = parts.length; _j < _len1; _j++) {
@@ -1087,8 +1060,6 @@ Copyright (c) 2011 by Harvest
     return Chosen;
 
   })(AbstractChosen);
-
-  root.Chosen = Chosen;
 
   get_side_border_padding = function(elmt) {
     var side_border_padding;
