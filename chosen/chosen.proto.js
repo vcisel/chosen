@@ -850,8 +850,8 @@ Copyright (c) 2011 by Harvest
             if (regex.test(option.html)) {
               found = true;
               results += 1;
-            } else if (this.enable_split_word_search && (option.html.indexOf(" ") >= 0 || option.html.indexOf("[") === 0)) {
-              parts = option.html.replace(/\[|\]/g, "").split(" ");
+            } else if (this.enable_split_word_search && (option.html.indexOf(" ") >= 0 || option.html.indexOf("/") >= 0 || option.html.indexOf("[") === 0)) {
+              parts = option.html.replace(/\[|\]/g, "").split(new RegExp("[\/ ]+", "g"));
               if (parts.length) {
                 for (_j = 0, _len1 = parts.length; _j < _len1; _j++) {
                   part = parts[_j];
