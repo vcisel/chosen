@@ -770,6 +770,9 @@ Copyright (c) 2011 by Harvest
           this.result_single_selected = high;
         }
         high.addClassName("result-selected");
+        if (high.hasClass("adder-result")) {
+          return;
+        }
         position = high.id.substr(high.id.lastIndexOf("_") + 1);
         item = this.results_data[position];
         item.selected = true;

@@ -783,6 +783,9 @@ Copyright (c) 2011 by Harvest
           this.selected_item.removeClass("chzn-default");
         }
         high.addClass("result-selected");
+        if (high.hasClass("adder-result")) {
+          return;
+        }
         position = high_id.substr(high_id.lastIndexOf("_") + 1);
         item = this.results_data[position];
         item.selected = true;

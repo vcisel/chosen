@@ -340,6 +340,9 @@ class Chosen extends AbstractChosen
 
       high.addClassName("result-selected")
 
+      if high.hasClass "adder-result" 
+        return
+
       position = high.id.substr(high.id.lastIndexOf("_") + 1 )
       item = @results_data[position]
       item.selected = true
